@@ -1,6 +1,22 @@
 #ifndef TREE_H
 #define TREE_H
-#include "treeNode.h"
+#include <QGraphicsItem>
+#include <QPainter>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+class Node;
+class treeNode: public QGraphicsObject
+{
+public:
+    QPoint coords;
+    int value;
+    treeNode(int x, int y, int value);
+    virtual~treeNode();
+    QRectF boundingRect()const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void animate();
+
+};
 class Node {
 public:
     Node(int value);
@@ -17,4 +33,5 @@ public:
     ~BinaryTree();
     Node* root;
 };
+
 #endif // TREE_H

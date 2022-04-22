@@ -18,6 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void insertNode(int value);
+//    Node* getParent(int value);
+    void checkSubTreeOf(Node* begin, bool where);
+    void checkNode(Node*current, Node* newNode, bool where);
     bool findNode(int value);
 private slots:
     void on_insertButton_clicked();
@@ -25,6 +28,7 @@ private slots:
     void on_findButton_clicked();
 
 private:
+    void gatherAnims(QParallelAnimationGroup* group, Node* begin, Node* newNode, bool where);
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     BinaryTree tree;

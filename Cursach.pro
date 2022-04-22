@@ -11,13 +11,11 @@ CONFIG += c++11
 SOURCES += \
     Tree.cpp \
     main.cpp \
-    mainwindow.cpp \
-    treeNode.cpp
+    mainwindow.cpp
 
 HEADERS += \
     Tree.h \
-    mainwindow.h \
-    treeNode.h
+    mainwindow.h
 
 FORMS += \
     mainwindow.ui
