@@ -44,19 +44,21 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
 void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true - right
     QParallelAnimationGroup* anim_group = new QParallelAnimationGroup(this);
     gatherAnims(anim_group, tree.root,marker, where);
-    QPropertyAnimation* an = new QPropertyAnimation(marker->node, "pos");
-    an->setDuration(1500);
-    if(where){
-        an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
-        an->setEndValue(QPoint(marker->node->coords.x() + 30, marker->node->coords.y()));
-        marker->node->coords = QPoint(marker->node->coords.x() + 30, marker->node->coords.y());
+    if(marker != tree.root){
+        QPropertyAnimation* an = new QPropertyAnimation(marker->node, "pos");
+        an->setDuration(1500);
+        if(where){
+            an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
+            an->setEndValue(QPoint(marker->node->coords.x() + 30, marker->node->coords.y()));
+            marker->node->coords = QPoint(marker->node->coords.x() + 30, marker->node->coords.y());
+        }
+        else{
+            an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
+            an->setEndValue(QPoint(marker->node->coords.x() - 30, marker->node->coords.y()));
+            marker->node->coords = QPoint(marker->node->coords.x() - 30, marker->node->coords.y());
+        }
+        anim_group->addAnimation(an);
     }
-    else{
-        an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
-        an->setEndValue(QPoint(marker->node->coords.x() - 30, marker->node->coords.y()));
-        marker->node->coords = QPoint(marker->node->coords.x() - 30, marker->node->coords.y());
-    }
-    anim_group->addAnimation(an);
     anim_group->start();
 
 }
@@ -84,8 +86,12 @@ void MainWindow::insertNode(int value){
                     delay(2000);
                     newNode->node->animate();
                     delay(2000);
-                    checkNode(tree.root->left,newNode, false);
-                    checkNode(tree.root->right,newNode, true);
+                    if(value < tree.root->value){
+                        checkNode(tree.root,newNode, false);
+                    }
+                    else{
+                        checkNode(tree.root,newNode, true);
+                    }
                     break;
                 }
             }
@@ -98,8 +104,12 @@ void MainWindow::insertNode(int value){
                     delay(2000);
                     newNode->node->animate();
                     delay(2000);
-                    checkNode(tree.root->left,newNode, false);
-                    checkNode(tree.root->right,newNode, true);
+                    if(value < tree.root->value){
+                        checkNode(tree.root,newNode, false);
+                    }
+                    else{
+                        checkNode(tree.root,newNode, true);
+                    }
                     break;
                 }
             }
