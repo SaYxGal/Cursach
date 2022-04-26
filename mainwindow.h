@@ -18,7 +18,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void insertNode(int value);
-//    Node* getParent(int value);
     void checkSubTreeOf(Node* begin, bool where);
     void checkNode(Node*current, Node* newNode, bool where);
     bool findNode(int value);
@@ -33,5 +32,6 @@ private:
     QGraphicsScene *scene;
     BinaryTree tree;
 };
+void findParent(Node* node, Node* child, Node*parent);
 void delay( int millisecondsToWait );
 #endif // MAINWINDOW_H

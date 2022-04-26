@@ -42,7 +42,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
     }
 }
 void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true - right
-    QParallelAnimationGroup* anim_group = new QParallelAnimationGroup(this);
+    QParallelAnimationGroup* anim_group = new QParallelAnimationGroup;
     gatherAnims(anim_group, tree.root,marker, where);
     if(marker != tree.root){
         QPropertyAnimation* an = new QPropertyAnimation(marker->node, "pos");
@@ -59,7 +59,7 @@ void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true 
         }
         anim_group->addAnimation(an);
     }
-    anim_group->start();
+    anim_group->start(QAbstractAnimation::DeleteWhenStopped);
 
 }
 
@@ -92,6 +92,7 @@ void MainWindow::insertNode(int value){
                     else{
                         checkNode(tree.root,newNode, true);
                     }
+
                     break;
                 }
             }
@@ -110,6 +111,7 @@ void MainWindow::insertNode(int value){
                     else{
                         checkNode(tree.root,newNode, true);
                     }
+
                     break;
                 }
             }
@@ -129,8 +131,16 @@ void MainWindow::checkNode(Node *current, Node* newNode, bool where){
             checkSubTreeOf(newNode, where);
             return;
         }
+        findParent(tree.root, current, nullptr);
+        if(current->node->line_left != nullptr){
+            scene->addItem(current->node->line_left);
+        }
+        if(current->node->line_right != nullptr){
+            scene->addItem(current->node->line_right);
+        }
     }
 }
+
 bool MainWindow::findNode(int value){
     Node* current = tree.root;
     while (current != nullptr) {
@@ -146,25 +156,6 @@ bool MainWindow::findNode(int value){
     }
     return false;
 }
-
-//Node* MainWindow::getParent(int value){
-//    Node* current = tree.root;
-//    Node* parent = nullptr;
-//    while (current != nullptr) {
-//        if (value == current->value) {
-//            return parent;
-//        }
-//        else if (value < current->value) {
-//            parent = current;
-//            current = current->left;
-//        }
-//        else {
-//            parent = current;
-//            current = current->right;
-//        }
-//    }
-//    return nullptr;
-//}
 
 void MainWindow::on_insertButton_clicked()
 {
@@ -183,6 +174,26 @@ void delay( int millisecondsToWait )
     while( QTime::currentTime() < dieTime )
     {
         QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+}
+
+void findParent(Node *node, Node *child, Node *parent)
+{
+    if(node == nullptr){
+        return;
+    }
+    if(node->value == child->value && parent != nullptr){
+        if(child->value < parent->value){
+            parent->node->line_left = new QGraphicsLineItem(parent->node->coords.x() + 15 - 8, parent->node->coords.y() + 15 + 13, child->node->coords.x() + 15 + 8, child->node->coords.y() + 15 - 13); //15 - это корректировка, чтобы отсчитывали от центра, 8 и 13 для нахождения точки сбоку кружка
+        }
+        else{
+            parent->node->line_right = new QGraphicsLineItem(parent->node->coords.x() + 15 + 8, parent->node->coords.y() + 15 + 13, child->node->coords.x() + 15 - 8, child->node->coords.y() + 15 - 13);
+        }
+        return;
+    }
+    else{
+        findParent(node->left, child, node);
+        findParent(node->right, child, node);
     }
 }
 

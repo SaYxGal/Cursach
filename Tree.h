@@ -10,6 +10,8 @@ class treeNode: public QGraphicsObject
 public:
     QPoint coords;
     int value;
+    QGraphicsLineItem* line_left;
+    QGraphicsLineItem* line_right;
     treeNode(int x, int y, int value);
     virtual~treeNode();
     QRectF boundingRect()const;
@@ -26,6 +28,7 @@ public:
     treeNode* node;
 };
 void clearNode(Node* curr);
+
 class BinaryTree {
 public:
     BinaryTree();

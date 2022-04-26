@@ -18,8 +18,11 @@ void BinaryTree::clearTree() {
 QRectF treeNode::boundingRect()const{
     return QRectF(0, 0, 30, 30);
 }
-treeNode::treeNode(int x, int y, int val): coords(x, y), value(val){}
-treeNode::~treeNode(){}
+treeNode::treeNode(int x, int y, int val): coords(x, y), value(val), line_left(nullptr), line_right(nullptr){}
+treeNode::~treeNode(){
+    delete line_right;
+    delete line_left;
+}
 void treeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPen pen(Qt::green);
@@ -37,6 +40,8 @@ void treeNode::animate(){
     anim->setDuration(2000);
     anim->setStartValue(QPoint(0, 0));
     anim->setEndValue(coords);
-    anim->start();
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
+
+
 
