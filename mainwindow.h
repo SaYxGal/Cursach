@@ -32,6 +32,6 @@ private:
     QGraphicsScene *scene;
     BinaryTree tree;
 };
-void findParent(Node* node, Node* child, Node*parent);
+void findParent(QGraphicsScene* scene,Node* node, Node* child, Node*parent);
 void delay( int millisecondsToWait );
 #endif // MAINWINDOW_H

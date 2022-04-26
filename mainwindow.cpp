@@ -92,6 +92,7 @@ void MainWindow::insertNode(int value){
                     else{
                         checkNode(tree.root,newNode, true);
                     }
+                    checkNode(tree.root,newNode, false); //холостой прогон для обновления линий, лучше варианта пока не нашёл
 
                     break;
                 }
@@ -111,6 +112,7 @@ void MainWindow::insertNode(int value){
                     else{
                         checkNode(tree.root,newNode, true);
                     }
+                    checkNode(tree.root,newNode, false);
 
                     break;
                 }
@@ -131,13 +133,7 @@ void MainWindow::checkNode(Node *current, Node* newNode, bool where){
             checkSubTreeOf(newNode, where);
             return;
         }
-        findParent(tree.root, current, nullptr);
-        if(current->node->line_left != nullptr){
-            scene->addItem(current->node->line_left);
-        }
-        if(current->node->line_right != nullptr){
-            scene->addItem(current->node->line_right);
-        }
+        findParent(scene,tree.root, current, nullptr);
     }
 }
 
@@ -177,23 +173,33 @@ void delay( int millisecondsToWait )
     }
 }
 
-void findParent(Node *node, Node *child, Node *parent)
+void findParent(QGraphicsScene* scene,Node *node, Node *child, Node *parent)
 {
     if(node == nullptr){
         return;
     }
     if(node->value == child->value && parent != nullptr){
         if(child->value < parent->value){
+            if(parent->node->line_left != nullptr){
+                scene->removeItem(parent->node->line_left);
+                delete parent->node->line_left;
+            }
             parent->node->line_left = new QGraphicsLineItem(parent->node->coords.x() + 15 - 8, parent->node->coords.y() + 15 + 13, child->node->coords.x() + 15 + 8, child->node->coords.y() + 15 - 13); //15 - это корректировка, чтобы отсчитывали от центра, 8 и 13 для нахождения точки сбоку кружка
+            scene->addItem(parent->node->line_left);
         }
         else{
+            if(parent->node->line_right != nullptr){
+                scene->removeItem(parent->node->line_right);
+                delete parent->node->line_right;
+            }
             parent->node->line_right = new QGraphicsLineItem(parent->node->coords.x() + 15 + 8, parent->node->coords.y() + 15 + 13, child->node->coords.x() + 15 - 8, child->node->coords.y() + 15 - 13);
+            scene->addItem(parent->node->line_right);
         }
         return;
     }
     else{
-        findParent(node->left, child, node);
-        findParent(node->right, child, node);
+        findParent(scene,node->left, child, node);
+        findParent(scene,node->right, child, node);
     }
 }
 
