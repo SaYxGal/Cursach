@@ -20,7 +20,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
         gatherAnims(group, current->right, newNode, where);
 
         if(where){
-            if(current != newNode && current->node->coords.x() > newNode->node->coords.x()){
+            if(current != newNode && current != tree.root && current->node->coords.x() > newNode->node->coords.x()){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
                 anim->setDuration(1500);
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
@@ -28,15 +28,31 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
                 current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
                  group->addAnimation(anim);
             }
+            else if(current != newNode && current != tree.root && current->node->coords.x() == newNode->node->coords.x() && current->value > newNode->value){
+                QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
+                anim->setDuration(1500);
+                anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
+                anim->setEndValue(QPoint(current->node->coords.x() + 30, current->node->coords.y()));
+                current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
+                group->addAnimation(anim);
+            }
         }
         else{
-            if(current != newNode && current->node->coords.x() < newNode->node->coords.x()){
+            if(current != newNode && current != tree.root && current->node->coords.x() < newNode->node->coords.x()){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
                 anim->setDuration(1500);
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
                 anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
                 current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
                  group->addAnimation(anim);
+            }
+            else if(current != newNode && current != tree.root && current->node->coords.x() == newNode->node->coords.x() && current->value < newNode->value){
+                QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
+                anim->setDuration(1500);
+                anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
+                anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
+                current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
+                group->addAnimation(anim);
             }
         }
     }
@@ -45,19 +61,7 @@ void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true 
     QParallelAnimationGroup* anim_group = new QParallelAnimationGroup;
     gatherAnims(anim_group, tree.root,marker, where);
     if(marker != tree.root){
-        QPropertyAnimation* an = new QPropertyAnimation(marker->node, "pos");
-        an->setDuration(1500);
-        if(where){
-            an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
-            an->setEndValue(QPoint(marker->node->coords.x() + 30, marker->node->coords.y()));
-            marker->node->coords = QPoint(marker->node->coords.x() + 30, marker->node->coords.y());
-        }
-        else{
-            an->setStartValue(QPoint(marker->node->coords.x(), marker->node->coords.y()));
-            an->setEndValue(QPoint(marker->node->coords.x() - 30, marker->node->coords.y()));
-            marker->node->coords = QPoint(marker->node->coords.x() - 30, marker->node->coords.y());
-        }
-        anim_group->addAnimation(an);
+        checkDistance(anim_group, tree.root, marker, nullptr);
     }
     anim_group->start(QAbstractAnimation::DeleteWhenStopped);
 
@@ -66,7 +70,7 @@ void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true 
 void MainWindow::insertNode(int value){
     if(!tree.root){
         tree.root = new Node(value);
-        tree.root->node = new treeNode(270, 0, tree.root->value);
+        tree.root->node = new treeNode((int)(ui->graphicsView->width()/2) - 15, 0, tree.root->value);
         scene->addItem(tree.root->node);
         delay(2000);
         tree.root->node->animate();
@@ -133,7 +137,7 @@ void MainWindow::checkNode(Node *current, Node* newNode, bool where){
             checkSubTreeOf(newNode, where);
             return;
         }
-        findParent(scene,tree.root, current, nullptr);
+        findParentWithAddLine(scene,tree.root, current, nullptr);
     }
 }
 
@@ -173,7 +177,7 @@ void delay( int millisecondsToWait )
     }
 }
 
-void findParent(QGraphicsScene* scene,Node *node, Node *child, Node *parent)
+void findParentWithAddLine(QGraphicsScene* scene,Node *node, Node *child, Node *parent)
 {
     if(node == nullptr){
         return;
@@ -198,8 +202,44 @@ void findParent(QGraphicsScene* scene,Node *node, Node *child, Node *parent)
         return;
     }
     else{
-        findParent(scene,node->left, child, node);
-        findParent(scene,node->right, child, node);
+        findParentWithAddLine(scene,node->left, child, node);
+        findParentWithAddLine(scene,node->right, child, node);
     }
 }
 
+
+
+void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *child, Node *parent)
+{
+    if(current == nullptr){
+        return;
+    }
+    if(current->value == child->value && parent != nullptr){
+        if(parent->node->coords.x() - child->node->coords.x() > 30){
+            QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
+            anim->setDuration(1500);
+            anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
+            anim->setEndValue(QPoint(current->node->coords.x() + 30, current->node->coords.y()));
+            current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
+            anim_group->addAnimation(anim);
+            return;
+        }
+        else if(parent->node->coords.x() - child->node->coords.x() < -30){
+            QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
+            anim->setDuration(1500);
+            anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
+            anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
+            current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
+            anim_group->addAnimation(anim);
+            return;
+        }
+
+        else{
+            return;
+        }
+    }
+    else{
+        checkDistance(anim_group,current->left, child, current);
+        checkDistance(anim_group,current->right, child, current);
+    }
+}

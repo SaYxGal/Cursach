@@ -32,6 +32,7 @@ private:
     QGraphicsScene *scene;
     BinaryTree tree;
 };
-void findParent(QGraphicsScene* scene,Node* node, Node* child, Node*parent);
+void findParentWithAddLine(QGraphicsScene* scene,Node* node, Node* child, Node*parent);
+void checkDistance(QParallelAnimationGroup* anim_group, Node* current, Node*child, Node*parent);
 void delay( int millisecondsToWait );
 #endif // MAINWINDOW_H
