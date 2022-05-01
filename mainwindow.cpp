@@ -127,6 +127,7 @@ void MainWindow::insertNode(int value){
             }
         }
     }
+    ui->spinBox->setReadOnly(false);
 }
 
 void MainWindow::checkNode(Node *current, Node* newNode, bool where){
@@ -141,31 +142,71 @@ void MainWindow::checkNode(Node *current, Node* newNode, bool where){
     }
 }
 
-bool MainWindow::findNode(int value){
+void MainWindow::findNode(int value){
+    FinderNode* finder = nullptr;
+    if(tree.root != nullptr){
+        finder = new FinderNode;
+        finder->setPos(tree.root->node->coords);
+        scene->addItem(finder);
+    }
     Node* current = tree.root;
     while (current != nullptr) {
         if (value == current->value) {
-            return true;
+            ui->output->setText("Элемент найден");
+            delay(1500);
+            scene->removeItem(finder);
+            delete finder;
+            return;
         }
         else if (value < current->value) {
+            ui->output->setText(QString::number(value) + " < " + QString::number(current->value));
+            delay(1000);
             current = current->left;
+            if(current != nullptr){
+                QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
+                anim->setDuration(1500);
+                anim->setStartValue(finder->pos());
+                anim->setEndValue(current->node->coords);
+                finder->setPos(tree.root->node->coords);
+                anim->start(QAbstractAnimation::DeleteWhenStopped);
+                delay(2000);
+            }
         }
         else {
+            ui->output->setText(QString::number(value) + " > " + QString::number(current->value));
+            delay(1000);
             current = current->right;
+            if(current != nullptr){
+                QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
+                anim->setDuration(1500);
+                anim->setStartValue(finder->pos());
+                anim->setEndValue(current->node->coords);
+                finder->setPos(tree.root->node->coords);
+                anim->start(QAbstractAnimation::DeleteWhenStopped);
+                delay(2000);
+            }
         }
     }
-    return false;
+    ui->output->setText("Элемент не найден");
+    delay(1000);
+    if(finder != nullptr){
+        scene->removeItem(finder);
+    }
+    delete finder;
 }
 
 void MainWindow::on_insertButton_clicked()
 {
+    ui->output->setText("");
+    ui->spinBox->setReadOnly(true);
     insertNode(ui->spinBox->value());
 }
 
 
 void MainWindow::on_findButton_clicked()
 {
-
+    ui->output->setText("");
+    findNode(ui->spinBox_2->value());
 }
 
 void delay( int millisecondsToWait )

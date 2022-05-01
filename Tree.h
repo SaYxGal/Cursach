@@ -29,6 +29,14 @@ public:
 };
 void clearNode(Node* curr);
 
+class FinderNode: public QGraphicsObject
+{
+public:
+    virtual ~FinderNode();
+    QRectF boundingRect()const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+};
+
 class BinaryTree {
 public:
     BinaryTree();

@@ -20,7 +20,7 @@ public:
     void insertNode(int value);
     void checkSubTreeOf(Node* begin, bool where);
     void checkNode(Node*current, Node* newNode, bool where);
-    bool findNode(int value);
+    void findNode(int value);
 private slots:
     void on_insertButton_clicked();
 

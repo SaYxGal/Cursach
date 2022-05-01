@@ -45,3 +45,21 @@ void treeNode::animate(){
 
 
 
+
+
+FinderNode::~FinderNode(){}
+
+QRectF FinderNode::boundingRect() const
+{
+    return QRectF(0, 0, 30, 30);
+}
+
+void FinderNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QPen pen(Qt::red, 3);
+    painter->setPen(pen);
+    painter->drawEllipse(0, 0, 30, 30);
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+}
+
