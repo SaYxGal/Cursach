@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Визуализация дерева двоичного поиска");
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, ui->graphicsView->width(), ui->graphicsView->height());
     ui->graphicsView->setScene(scene);
@@ -79,11 +80,18 @@ void MainWindow::insertNode(int value){
         Node* newNode = new Node(value);
         Node* current = tree.root;
         Node* prev;
+        FinderNode* finder = new FinderNode;
+        finder->setPos(current->node->coords);
+        scene->addItem(finder);
         while (true) {
             prev = current;
             if (value < current->value) {
+                ui->output->setText(QString::number(value) + " < " + QString::number(current->value));
+                delay(1000);
                 current = current->left;
                 if (current == nullptr) {
+                    scene->removeItem(finder);
+                    delete finder;
                     newNode->node = new treeNode(prev->node->coords.x() - 30,prev->node->coords.y() + 40, newNode->value);
                     scene->addItem(newNode->node);
                     prev->left = newNode;
@@ -100,10 +108,23 @@ void MainWindow::insertNode(int value){
 
                     break;
                 }
+                else{
+                    QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
+                    anim->setDuration(1500);
+                    anim->setStartValue(finder->pos());
+                    anim->setEndValue(current->node->coords);
+                    finder->setPos(tree.root->node->coords);
+                    anim->start(QAbstractAnimation::DeleteWhenStopped);
+                    delay(2000);
+                }
             }
             else if (value > current->value) {
+                ui->output->setText(QString::number(value) + " > " + QString::number(current->value));
+                delay(1000);
                 current = current->right;
                 if (current == nullptr) {
+                    scene->removeItem(finder);
+                    delete finder;
                     newNode->node = new treeNode(prev->node->coords.x() + 30,prev->node->coords.y() + 40, newNode->value);
                     scene->addItem(newNode->node);
                     prev->right = newNode;
@@ -120,14 +141,26 @@ void MainWindow::insertNode(int value){
 
                     break;
                 }
+                else{
+                    QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
+                    anim->setDuration(1500);
+                    anim->setStartValue(finder->pos());
+                    anim->setEndValue(current->node->coords);
+                    finder->setPos(tree.root->node->coords);
+                    anim->start(QAbstractAnimation::DeleteWhenStopped);
+                    delay(2000);
+                }
             }
             else {
+                scene->removeItem(finder);
+                delete finder;
                 delete newNode;
                 break;
             }
         }
     }
     ui->spinBox->setReadOnly(false);
+    ui->spinBox_2->setReadOnly(false);
 }
 
 void MainWindow::checkNode(Node *current, Node* newNode, bool where){
@@ -156,6 +189,8 @@ void MainWindow::findNode(int value){
             delay(1500);
             scene->removeItem(finder);
             delete finder;
+            ui->spinBox->setReadOnly(false);
+            ui->spinBox_2->setReadOnly(false);
             return;
         }
         else if (value < current->value) {
@@ -193,12 +228,15 @@ void MainWindow::findNode(int value){
         scene->removeItem(finder);
     }
     delete finder;
+    ui->spinBox->setReadOnly(false);
+    ui->spinBox_2->setReadOnly(false);
 }
 
 void MainWindow::on_insertButton_clicked()
 {
     ui->output->setText("");
     ui->spinBox->setReadOnly(true);
+    ui->spinBox_2->setReadOnly(true);
     insertNode(ui->spinBox->value());
 }
 
@@ -206,6 +244,8 @@ void MainWindow::on_insertButton_clicked()
 void MainWindow::on_findButton_clicked()
 {
     ui->output->setText("");
+    ui->spinBox->setReadOnly(true);
+    ui->spinBox_2->setReadOnly(true);
     findNode(ui->spinBox_2->value());
 }
 
