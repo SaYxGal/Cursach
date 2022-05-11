@@ -195,6 +195,9 @@ void MainWindow::findNode(int value){
             delete finder;
             ui->spinBox->setReadOnly(false);
             ui->spinBox_2->setReadOnly(false);
+            ui->comboBox->setEnabled(true);
+            ui->findButton->setEnabled(true);
+            ui->insertButton->setEnabled(true);
             return;
         }
         else if (value < current->value) {
