@@ -23,7 +23,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
         if(where){
             if(current != newNode && current != tree.root && current->node->coords.x() > newNode->node->coords.x()){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
                 anim->setEndValue(QPoint(current->node->coords.x() + 30, current->node->coords.y()));
                 current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
@@ -31,7 +31,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
             }
             else if(current != newNode && current != tree.root && current->node->coords.x() == newNode->node->coords.x() && current->value > newNode->value){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
                 anim->setEndValue(QPoint(current->node->coords.x() + 30, current->node->coords.y()));
                 current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
@@ -41,7 +41,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
         else{
             if(current != newNode && current != tree.root && current->node->coords.x() < newNode->node->coords.x()){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
                 anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
                 current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
@@ -49,7 +49,7 @@ void MainWindow::gatherAnims(QParallelAnimationGroup *group, Node* current, Node
             }
             else if(current != newNode && current != tree.root && current->node->coords.x() == newNode->node->coords.x() && current->value < newNode->value){
                 QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
                 anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
                 current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
@@ -62,7 +62,7 @@ void MainWindow::checkSubTreeOf(Node* marker, bool where){ //false - left, true 
     QParallelAnimationGroup* anim_group = new QParallelAnimationGroup;
     gatherAnims(anim_group, tree.root,marker, where);
     if(marker != tree.root){
-        checkDistance(anim_group, tree.root, marker, nullptr);
+        checkDistance(anim_group, tree.root, marker, nullptr, multiplicator);
     }
     anim_group->start(QAbstractAnimation::DeleteWhenStopped);
 
@@ -73,8 +73,8 @@ void MainWindow::insertNode(int value){
         tree.root = new Node(value);
         tree.root->node = new treeNode((int)(ui->graphicsView->width()/2) - 15, 0, tree.root->value);
         scene->addItem(tree.root->node);
-        delay(2000);
-        tree.root->node->animate();
+        delay(int(2000*multiplicator));
+        tree.root->node->animate(multiplicator);
     }
     else{
         Node* newNode = new Node(value);
@@ -87,7 +87,7 @@ void MainWindow::insertNode(int value){
             prev = current;
             if (value < current->value) {
                 ui->output->setText(QString::number(value) + " < " + QString::number(current->value));
-                delay(1000);
+                delay(int(1000*multiplicator));
                 current = current->left;
                 if (current == nullptr) {
                     scene->removeItem(finder);
@@ -95,32 +95,33 @@ void MainWindow::insertNode(int value){
                     newNode->node = new treeNode(prev->node->coords.x() - 30,prev->node->coords.y() + 40, newNode->value);
                     scene->addItem(newNode->node);
                     prev->left = newNode;
-                    delay(2000);
-                    newNode->node->animate();
-                    delay(2000);
+                    delay(int(2000*multiplicator));
+                    newNode->node->animate(multiplicator);
+                    delay(int(2000*multiplicator));
                     if(value < tree.root->value){
                         checkNode(tree.root,newNode, false);
                     }
                     else{
                         checkNode(tree.root,newNode, true);
                     }
+                    delay(int(1000* multiplicator));
                     checkNode(tree.root,newNode, false); //холостой прогон для обновления линий, лучше варианта пока не нашёл
 
                     break;
                 }
                 else{
                     QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
-                    anim->setDuration(1500);
+                    anim->setDuration(int(1500*multiplicator));
                     anim->setStartValue(finder->pos());
                     anim->setEndValue(current->node->coords);
                     finder->setPos(tree.root->node->coords);
                     anim->start(QAbstractAnimation::DeleteWhenStopped);
-                    delay(2000);
+                    delay(int(2000*multiplicator));
                 }
             }
             else if (value > current->value) {
                 ui->output->setText(QString::number(value) + " > " + QString::number(current->value));
-                delay(1000);
+                delay(int(1000*multiplicator));
                 current = current->right;
                 if (current == nullptr) {
                     scene->removeItem(finder);
@@ -128,9 +129,9 @@ void MainWindow::insertNode(int value){
                     newNode->node = new treeNode(prev->node->coords.x() + 30,prev->node->coords.y() + 40, newNode->value);
                     scene->addItem(newNode->node);
                     prev->right = newNode;
-                    delay(2000);
-                    newNode->node->animate();
-                    delay(2000);
+                    delay(int(2000*multiplicator));
+                    newNode->node->animate(multiplicator);
+                    delay(int(2000*multiplicator));
                     if(value < tree.root->value){
                         checkNode(tree.root,newNode, false);
                     }
@@ -143,12 +144,12 @@ void MainWindow::insertNode(int value){
                 }
                 else{
                     QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
-                    anim->setDuration(1500);
+                    anim->setDuration(int(1500*multiplicator));
                     anim->setStartValue(finder->pos());
                     anim->setEndValue(current->node->coords);
                     finder->setPos(tree.root->node->coords);
                     anim->start(QAbstractAnimation::DeleteWhenStopped);
-                    delay(2000);
+                    delay(int(2000*multiplicator));
                 }
             }
             else {
@@ -161,6 +162,9 @@ void MainWindow::insertNode(int value){
     }
     ui->spinBox->setReadOnly(false);
     ui->spinBox_2->setReadOnly(false);
+    ui->comboBox->setEnabled(true);
+    ui->findButton->setEnabled(true);
+    ui->insertButton->setEnabled(true);
 }
 
 void MainWindow::checkNode(Node *current, Node* newNode, bool where){
@@ -186,7 +190,7 @@ void MainWindow::findNode(int value){
     while (current != nullptr) {
         if (value == current->value) {
             ui->output->setText("Элемент найден");
-            delay(1500);
+            delay(int(1500*multiplicator));
             scene->removeItem(finder);
             delete finder;
             ui->spinBox->setReadOnly(false);
@@ -195,41 +199,44 @@ void MainWindow::findNode(int value){
         }
         else if (value < current->value) {
             ui->output->setText(QString::number(value) + " < " + QString::number(current->value));
-            delay(1000);
+            delay(int(1000*multiplicator));
             current = current->left;
             if(current != nullptr){
                 QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(finder->pos());
                 anim->setEndValue(current->node->coords);
                 finder->setPos(tree.root->node->coords);
                 anim->start(QAbstractAnimation::DeleteWhenStopped);
-                delay(2000);
+                delay(int(2000*multiplicator));
             }
         }
         else {
             ui->output->setText(QString::number(value) + " > " + QString::number(current->value));
-            delay(1000);
+            delay(int(1000*multiplicator));
             current = current->right;
             if(current != nullptr){
                 QPropertyAnimation* anim = new QPropertyAnimation(finder, "pos");
-                anim->setDuration(1500);
+                anim->setDuration(int(1500*multiplicator));
                 anim->setStartValue(finder->pos());
                 anim->setEndValue(current->node->coords);
                 finder->setPos(tree.root->node->coords);
                 anim->start(QAbstractAnimation::DeleteWhenStopped);
-                delay(2000);
+                delay(int(2000*multiplicator));
             }
         }
     }
     ui->output->setText("Элемент не найден");
-    delay(1000);
+    delay(int(1000*multiplicator));
     if(finder != nullptr){
         scene->removeItem(finder);
     }
     delete finder;
     ui->spinBox->setReadOnly(false);
     ui->spinBox_2->setReadOnly(false);
+    ui->comboBox->setEnabled(true);
+    ui->findButton->setEnabled(true);
+    ui->insertButton->setEnabled(true);
 }
 
 void MainWindow::on_insertButton_clicked()
@@ -237,6 +244,9 @@ void MainWindow::on_insertButton_clicked()
     ui->output->setText("");
     ui->spinBox->setReadOnly(true);
     ui->spinBox_2->setReadOnly(true);
+    ui->comboBox->setEnabled(false);
+    ui->findButton->setEnabled(false);
+    ui->insertButton->setEnabled(false);
     insertNode(ui->spinBox->value());
 }
 
@@ -246,6 +256,9 @@ void MainWindow::on_findButton_clicked()
     ui->output->setText("");
     ui->spinBox->setReadOnly(true);
     ui->spinBox_2->setReadOnly(true);
+    ui->comboBox->setEnabled(false);
+    ui->findButton->setEnabled(false);
+    ui->insertButton->setEnabled(false);
     findNode(ui->spinBox_2->value());
 }
 
@@ -290,7 +303,7 @@ void findParentWithAddLine(QGraphicsScene* scene,Node *node, Node *child, Node *
 
 
 
-void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *child, Node *parent)
+void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *child, Node *parent, double multi)
 {
     if(current == nullptr){
         return;
@@ -298,7 +311,7 @@ void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *chil
     if(current->value == child->value && parent != nullptr){
         if(parent->node->coords.x() - child->node->coords.x() > 30){
             QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-            anim->setDuration(1500);
+            anim->setDuration(int(1500* multi));
             anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
             anim->setEndValue(QPoint(current->node->coords.x() + 30, current->node->coords.y()));
             current->node->coords = QPoint(current->node->coords.x() + 30, current->node->coords.y());
@@ -307,7 +320,7 @@ void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *chil
         }
         else if(parent->node->coords.x() - child->node->coords.x() < -30){
             QPropertyAnimation* anim = new QPropertyAnimation(current->node, "pos");
-            anim->setDuration(1500);
+            anim->setDuration(int(1500* multi));
             anim->setStartValue(QPoint(current->node->coords.x(), current->node->coords.y()));
             anim->setEndValue(QPoint(current->node->coords.x() - 30, current->node->coords.y()));
             current->node->coords = QPoint(current->node->coords.x() - 30, current->node->coords.y());
@@ -320,7 +333,29 @@ void checkDistance(QParallelAnimationGroup* anim_group,Node *current, Node *chil
         }
     }
     else{
-        checkDistance(anim_group,current->left, child, current);
-        checkDistance(anim_group,current->right, child, current);
+        checkDistance(anim_group,current->left, child, current, multi);
+        checkDistance(anim_group,current->right, child, current, multi);
     }
 }
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    switch(index){
+    case(0):
+        multiplicator = 1;
+        break;
+    case(1):
+        multiplicator = 2;
+        break;
+    case(2):
+        multiplicator = 0.5;
+        break;
+    case(3):
+        multiplicator = 0.3;
+        break;
+    default:
+        multiplicator = 1;
+        break;
+    }
+}
+

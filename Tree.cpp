@@ -35,9 +35,9 @@ void treeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     Q_UNUSED(option);
     Q_UNUSED(widget);
 }
-void treeNode::animate(){
+void treeNode::animate(double multi){
     QPropertyAnimation* anim = new QPropertyAnimation(this, "pos");
-    anim->setDuration(2000);
+    anim->setDuration(int(2000* multi));
     anim->setStartValue(QPoint(0, 0));
     anim->setEndValue(coords);
     anim->start(QAbstractAnimation::DeleteWhenStopped);

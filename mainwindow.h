@@ -26,13 +26,16 @@ private slots:
 
     void on_findButton_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     void gatherAnims(QParallelAnimationGroup* group, Node* begin, Node* newNode, bool where);
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     BinaryTree tree;
+    double multiplicator = 1;
 };
 void findParentWithAddLine(QGraphicsScene* scene,Node* node, Node* child, Node*parent);
-void checkDistance(QParallelAnimationGroup* anim_group, Node* current, Node*child, Node*parent);
+void checkDistance(QParallelAnimationGroup* anim_group, Node* current, Node*child, Node*parent, double multi);
 void delay( int millisecondsToWait );
 #endif // MAINWINDOW_H

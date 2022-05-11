@@ -16,7 +16,7 @@ public:
     virtual~treeNode();
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void animate();
+    void animate(double multi);
 
 };
 class Node {
